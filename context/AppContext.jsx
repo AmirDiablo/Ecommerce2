@@ -26,16 +26,19 @@ export const AppContextProvider = (props) => {
 
     const fetchUserData = async () => {
         try {
-            const id = JSON.parse(localStorage?.getItem("user"))?.id
-            const response = await fetch(`/api/user/userInfo/${id}`)
+            const data = JSON.parse(localStorage?.getItem("user"))
+            const response = await fetch(`/api/user/userInfo/${data?.id}`)
             const json = await response.json()
 
             if(json.role === "seller") {
                 setIsSeller(true)
             }
 
+            let obj = json
+            obj.token = data?.token
+            
             if(response.ok) {
-                setUserData(json)
+                setUserData(obj)
                 setCartItems(json.cartItems)
             }
 
@@ -99,6 +102,8 @@ export const AppContextProvider = (props) => {
             fetchUserData()
         }
     }, [localStorage.getItem('user'), ])
+
+    console.log(userData)
 
     const value = {
         currency, router,
