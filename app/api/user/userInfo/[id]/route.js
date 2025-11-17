@@ -6,7 +6,7 @@ export async function GET(req, { params }) {
     try {
         await connectDB(); // اتصال به دیتابیس
 
-        const { id } = params; // گرفتن آیدی از URL
+        const { id } = await params; // گرفتن آیدی از URL
 
         console.log(id)
 

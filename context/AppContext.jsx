@@ -3,6 +3,7 @@ import { productsDummyData, userDummyData } from "@/assets/assets";
 import { useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import axios from "axios";
 
 export const AppContext = createContext();
 
@@ -21,7 +22,18 @@ export const AppContextProvider = (props) => {
     const [cartItems, setCartItems] = useState({})
 
     const fetchProductData = async () => {
-        setProducts(productsDummyData)
+        try {
+            const {data} = await axios.get("/api/product/list")
+
+            if(data.success) {
+                setProducts(data.products)
+            }else{
+                toast.error(data.message)
+            }
+
+        } catch (error) {
+            toast.error(error.message)
+        }
     }
 
     const fetchUserData = async () => {
@@ -98,10 +110,10 @@ export const AppContextProvider = (props) => {
     }, [])
 
     useEffect(() => {
-        if(localStorage.getItem("user")) {
+        if(userData) {
             fetchUserData()
         }
-    }, [localStorage.getItem('user'), ])
+    }, [userData, ])
 
     console.log(userData)
 
