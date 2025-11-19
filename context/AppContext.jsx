@@ -60,8 +60,8 @@ export const AppContextProvider = (props) => {
     }
 
     const addToCart = async (itemId) => {
-
-        let cartData = structuredClone(cartItems);
+        let cartData = structuredClone(cartItems || {});
+        console.log(cartData)
         if (cartData[itemId]) {
             cartData[itemId] += 1;
         }
@@ -69,7 +69,20 @@ export const AppContextProvider = (props) => {
             cartData[itemId] = 1;
         }
         setCartItems(cartData);
+        console.log(cartItems)
+        toast.success("Item added to cart")
 
+        if(userData) {
+            console.log("ok")
+            try {
+                const token = userData.token
+                console.log(token)
+                const {data} = await axios.post("/api/cart/update", {cartData} , {headers: {Authorization: `Bearer ${token}`}})
+                toast.success("Item added to cart")
+            } catch (error) {
+                toast.error(error.message)
+            }
+        }
     }
 
     const updateCartQuantity = async (itemId, quantity) => {
@@ -81,6 +94,16 @@ export const AppContextProvider = (props) => {
             cartData[itemId] = quantity;
         }
         setCartItems(cartData)
+
+        if(userData) {
+            try {
+                const token = userData.token
+                const {data} = await axios.post("/api/cart/update", {cartData} , {headers: {Authorization: `Bearer ${token}`}})
+                toast.success("Cart updated")
+            } catch (error) {
+                toast.error(error.message)
+            }
+        }
 
     }
 
@@ -110,12 +133,8 @@ export const AppContextProvider = (props) => {
     }, [])
 
     useEffect(() => {
-        if(userData) {
-            fetchUserData()
-        }
-    }, [userData, ])
-
-    console.log(userData)
+        fetchUserData()
+    }, [ ])
 
     const value = {
         currency, router,
