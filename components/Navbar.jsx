@@ -6,6 +6,7 @@ import { useAppContext } from "@/context/AppContext";
 import Image from "next/image";
 import SignUp from "./SignUp";
 import Login from "./Login"
+import UserButton from "./UserButton";
 
 const Navbar = () => {
 
@@ -43,13 +44,15 @@ const Navbar = () => {
       <ul className="hidden md:flex items-center gap-4 ">
         <Image className="w-4 h-4" src={assets.search_icon} alt="search icon" />
         {userData ?
-          <Image src={userData.imageUrl} alt="profile image" width={40} height={40} className="rounded-full cursor-pointer" />
+          <Image onClick={()=> setIsOpen(!isOpen)} src={userData.imageUrl} alt="profile image" width={40} height={40} className="rounded-full cursor-pointer" />
         :
-          <button onClick={()=> {setIsOpen(true), setSignUpisOpen(true)}} className="flex items-center gap-2 hover:text-gray-900 transition">
+          <button onClick={()=> {setSignUpisOpen(true)}} className="flex items-center gap-2 hover:text-gray-900 transition">
             <Image src={assets.user_icon} alt="user icon" />
             Account
           </button>
         }
+
+        {isOpen && <UserButton setIsOpen={setIsOpen} />}
       </ul>
 
       {signUpisOpen && <SignUp setLoginisOpen={setLoginisOpen} setSignUpisOpen={setSignUpisOpen} />}

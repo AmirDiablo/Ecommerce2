@@ -5,7 +5,7 @@ import { jwtDecode } from "jwt-decode";
 import { useRouter } from "next/navigation";
 import { useAppContext } from "@/context/AppContext";
 
-export default function GoogleButton() {
+export default function GoogleButton({setLoginisOpen}) {
   const router = useRouter();
   const {fetchUserData} = useAppContext()
 
@@ -33,6 +33,7 @@ export default function GoogleButton() {
             console.log("Server Response:", data);
             localStorage.setItem("user", JSON.stringify(data));
             fetchUserData()
+            setLoginisOpen(false)
             router.push("/"); // جایگزین navigate("/")
           } else {
             console.error("Error:", data.error);

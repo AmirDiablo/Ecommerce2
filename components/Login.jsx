@@ -47,7 +47,7 @@ export default function Login({ setLoginisOpen, setSignUpisOpen }) {
         Welcome back! please Log in to continue
       </p>
       <div className="mx-auto">
-        <GoogleButton />
+        <GoogleButton setLoginisOpen={setLoginisOpen} />
       </div>
 
       <div className="h-[1px] bg-black/20 w-[100%]"></div>

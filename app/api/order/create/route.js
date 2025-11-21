@@ -24,7 +24,7 @@ export async function POST(request) {
             userId: _id,
             items,
             address,
-            amount: Math.floor(amount * 0.02),
+            amount: amount + Math.floor(amount * 0.02),
             date: Date.now()
         })
 
