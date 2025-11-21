@@ -8,8 +8,6 @@ export async function GET(req, { params }) {
 
         const { id } = await params; // گرفتن آیدی از URL
 
-        console.log(id)
-
         const user = await User.findById(id).select("-password"); // حذف فیلد حساس مثل پسورد
 
         if (!user) {

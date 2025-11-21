@@ -14,7 +14,7 @@ export async function GET(req) {
         await dbConnect()
 
         const products = await Product.find({})
-        console.log(products)
+    
         return NextResponse.json({success: true, products})
         
     } catch (error) {

@@ -36,31 +36,22 @@ const SignUp = ({ setLoginisOpen, setSignUpisOpen }) => {
   };
 
   const handleContinue = async (e) => {
-    console.log("start")
     e.preventDefault();
     setLoading(true);
     setError("");
 
     try {
-      console.log("start2")
       const response = await fetch("/api/verification/send-code", {
         method: "POST",
         body: JSON.stringify({ email }),
         headers: { "Content-Type": "application/json" },
       });
-
-      console.log("start3")
-
       
       const json = await response.json();
 
-      console.log("start4")
-
       if (response.ok) {
-        console.log("start5")
         setFormNumber(2);
         startCountdown();
-        console.log("start6")
       } else {
         setError(json.error || "خطا در ارسال کد");
       }

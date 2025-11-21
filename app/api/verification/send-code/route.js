@@ -9,22 +9,19 @@ import dbConnect from "@/config/db";
 export async function POST(req) {
   try {
     await dbConnect()
-    console.log("test")
+    
     const { email } = await req.json();
 
-    console.log(email)
 
     const check = await User.findOne({ email });
-    console.log(check)
+
     if (check) {
       return NextResponse.json({ error: "این ایمیل قبلاً استفاده شده است" }, { status: 400 });
     }
 
-    console.log("test2")
+
 
     await Verification.deleteMany({ email });
-
-    console.log("test3")
 
     const code = Math.floor(100000 + Math.random() * 900000).toString();
     const hashedCode = await bcrypt.hash(code, 10);
