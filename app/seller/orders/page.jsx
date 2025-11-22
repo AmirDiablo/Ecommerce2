@@ -19,11 +19,7 @@ const Orders = () => {
         try {
             const token = userData?.token
 
-            console.log(token)
-
             const {data} = await axios.get("/api/order/seller-orders", {headers: {Authorization: `Bearer ${token}`}})
-
-            console.log(data)
 
             if(data.success) {
                 setOrders(data.orders);

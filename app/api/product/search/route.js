@@ -9,8 +9,6 @@ export async function GET(request) {
         const { searchParams } = new URL(request.url);
         const q = searchParams.get("q")?.toLowerCase() || "";
 
-        console.log(q)
-
         await dbConnect()
 
         const products = await Product.find({ $text: { $search: q } })

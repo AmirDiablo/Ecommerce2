@@ -20,6 +20,7 @@ export const AppContextProvider = (props) => {
     const [userData, setUserData] = useState(false)
     const [isSeller, setIsSeller] = useState(false)
     const [cartItems, setCartItems] = useState({})
+    const [favList, setFavList] = useState([])
 
     const fetchProductData = async () => {
         try {
@@ -127,13 +128,30 @@ export const AppContextProvider = (props) => {
         return Math.floor(totalAmount * 100) / 100;
     }
 
+    const fetchFav = async ()=> {
+        const token = userData?.token
+        const {data} = await axios.get("/api/fav/fav-list", {headers: {Authorization: `Bearer ${token}`} })
+
+        if(data.success) {
+            setFavList(data.list)
+        }
+    }
+
     useEffect(() => {
         fetchProductData()
     }, [])
 
     useEffect(() => {
         fetchUserData()
-    }, [ ])
+    }, [])
+
+    useEffect(()=> {
+        if(userData) {
+            fetchFav()
+        }
+    }, [userData])
+
+    console.log(favList)
 
     const value = {
         currency, router,
@@ -143,7 +161,8 @@ export const AppContextProvider = (props) => {
         cartItems, setCartItems,
         addToCart, updateCartQuantity,
         getCartCount, getCartAmount,
-        setUserData
+        setUserData, setFavList,
+        favList
     }
 
     return (

@@ -4,10 +4,25 @@ import React from 'react'
 import { assets } from '@/assets/assets'
 import Image from 'next/image';
 import { useAppContext } from '@/context/AppContext';
+import axios from 'axios';
 
 const ProductCard = ({ product }) => {
 
-    const { currency, router } = useAppContext()
+    const { currency, router, userData, favList, setFavList } = useAppContext()
+
+    const updateFav = async (e, productId)=> {
+        e.stopPropagation()
+        const token = userData?.token
+        const {data} = await axios.post("/api/fav/update-fav", {productId}, {headers: {Authorization: `Bearer ${token}`}})
+        const check = await favList.includes(productId)
+        if(check) {
+            const newList = favList.filter(item=> item != productId)
+            setFavList(newList)
+        }else{
+            const newList = [...favList, productId] 
+            setFavList(newList)
+        }
+    }
 
     return (
         <div
@@ -22,7 +37,7 @@ const ProductCard = ({ product }) => {
                     width={800}
                     height={800}
                 />
-                <button className="absolute top-2 right-2 bg-white p-2 rounded-full shadow-md">
+                <button onClick={(e)=> updateFav(e, product._id)} className="absolute top-2 right-2 bg-white p-2 rounded-full shadow-md">
                     <Image
                         className="h-3 w-3"
                         src={assets.heart_icon}
