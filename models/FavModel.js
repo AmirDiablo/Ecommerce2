@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import Product from "./ProductModel";
 
 const favSchema = new mongoose.Schema({
     userId: {type: String, required: true},
