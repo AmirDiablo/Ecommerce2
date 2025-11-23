@@ -1,8 +1,11 @@
+"use client"
+
 import { IoMdSettings } from "react-icons/io";
 import { BsBoxSeam } from "react-icons/bs";
 import { HiOutlineLogout } from "react-icons/hi";
 import { BsCart3 } from "react-icons/bs";
 import { useAppContext } from "@/context/AppContext";
+import { FaRegHeart } from "react-icons/fa";
 
 const UserButton = ({setIsOpen}) => {
     const {userData, setUserData, router} = useAppContext()
@@ -27,7 +30,8 @@ const UserButton = ({setIsOpen}) => {
                 <div><IoMdSettings /> <p>Manage account</p></div>
                 <div onClick={()=> router.push("/cart")}><BsCart3 /> <p>Cart</p></div>
                 <div onClick={()=> router.push("/my-orders")}><BsBoxSeam /> <p>My orders</p></div>
-                <div onClick={logout}><HiOutlineLogout /> <p>Log out</p></div>
+                <div onClick={()=> router.push("/fav")}><FaRegHeart /> <p>My favs</p></div>
+                <div onClick={logout}><HiOutlineLogout /> <p>Log out</p></div>  
             </div>
 
         </div>

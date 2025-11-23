@@ -3,7 +3,6 @@ import { requireAuth } from "@/lib/auth";
 import Fav from "@/models/FavModel";
 import { NextResponse } from "next/server";
 
-
 export async function GET(request) {
     try {
         const {_id} = await requireAuth(request)
@@ -15,6 +14,7 @@ export async function GET(request) {
         await dbConnect()
 
         const fav = await Fav.findOne({ userId: _id })
+        .populate({ path: 'products', model: 'Product' });
 
         const list = fav.products
 

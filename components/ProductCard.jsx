@@ -1,10 +1,11 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import { assets } from '@/assets/assets'
 import Image from 'next/image';
 import { useAppContext } from '@/context/AppContext';
 import axios from 'axios';
+import { IoMdHeart } from "react-icons/io";
 
 const ProductCard = ({ product }) => {
 
@@ -38,11 +39,13 @@ const ProductCard = ({ product }) => {
                     height={800}
                 />
                 <button onClick={(e)=> updateFav(e, product._id)} className="absolute top-2 right-2 bg-white p-2 rounded-full shadow-md">
-                    <Image
-                        className="h-3 w-3"
-                        src={assets.heart_icon}
-                        alt="heart_icon"
-                    />
+                    {favList.includes(product._id) ? <IoMdHeart /> : 
+                        <Image
+                            className="h-3 w-3"
+                            src={assets.heart_icon}
+                            alt="heart_icon"
+                        />
+                    }
                 </button>
             </div>
 
