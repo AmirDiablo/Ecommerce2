@@ -9,20 +9,79 @@ import { useParams } from "next/navigation";
 import Loading from "@/components/Loading";
 import { useAppContext } from "@/context/AppContext";
 import React from "react";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { IoSend } from "react-icons/io5";
 
 const Product = () => {
 
     const { id } = useParams();
 
-    const { products, router, addToCart } = useAppContext()
+    const { products, router, addToCart, userData } = useAppContext()
 
     const [mainImage, setMainImage] = useState(null);
     const [productData, setProductData] = useState(null);
+    const [rating, setRating] = useState(0)
+    const [comment, setComment] = useState("")
 
     const fetchProductData = async () => {
         const product = products.find(product => product._id === id);
         setProductData(product);
     }
+
+    const rate = async (value)=> {
+        try {
+            const token = userData?.token
+            const {data} = await axios.post("/api/product/rating", {productId: id, rating: value}, {headers: {Authorization: `Bearer ${token}`}})
+
+            if(data.success) {
+                toast.success("Rating submitted")
+                setRating(value)
+            }else{
+                toast.error(data.message)
+            }
+        } catch (error) {
+            toast.error(error.message)
+        }
+    }
+
+    const sendComment = async ()=> {
+        try {
+            const token = userData?.token
+            const {data} = await axios.post("/api/product/comment", {productId: id, text: comment}, {headers: {Authorization: `Bearer ${token}`}})
+
+            if(data.success) {
+                toast.success("Comment submitted")
+                setComment("")
+            }else{
+                toast.error(data.message)
+            }
+        } catch (error) {
+            toast.error(error.message)
+        }
+    }
+
+    const fetchUserRating = async ()=> {
+        try {
+            const token = userData?.token
+            const {data} = await axios.get(`/api/user/rating?productId=${id}`, {headers: {Authorization: `Bearer ${token}`}})
+
+            if(data.success) {
+                setRating(data.rating)
+            }else{
+                toast.error(data.message)
+            }
+
+        } catch (error) {
+            toast.error(error.message)
+        }
+    }
+
+    useEffect(()=> {
+       if(userData) {
+        fetchUserRating()
+       }
+    }, [userData])
 
     useEffect(() => {
         fetchProductData();
@@ -122,6 +181,33 @@ const Product = () => {
                     </div>
                 </div>
             </div>
+
+
+
+            <div className="text-center md:space-y-0 pt-10"> 
+                <div className="md:flex md:items-center md:justify-between md:px-40">
+                    <div className="flex items-center gap-0.5 *:hover:cursor-pointer justify-center md:order-2 mb-2">
+                        <Image onClick={()=> rate(1)} className="h-10 w-10" src={rating >= 1 ? assets.star_icon : assets.star_dull_icon} alt="star_icon" />
+                        <Image onClick={()=> rate(2)} className="h-10 w-10" src={rating >= 2 ? assets.star_icon : assets.star_dull_icon} alt="star_icon" />
+                        <Image onClick={()=> rate(3)} className="h-10 w-10" src={rating >= 3 ? assets.star_icon : assets.star_dull_icon} alt="star_icon" />
+                        <Image onClick={()=> rate(4)} className="h-10 w-10" src={rating >= 4 ? assets.star_icon : assets.star_dull_icon} alt="star_icon" />
+                        <Image onClick={()=> rate(5)} className="h-10 w-10" src={rating >= 5 ? assets.star_icon : assets.star_dull_icon} alt="star_dull_icon" />
+                    </div>
+
+                    <div className="md:order-1">
+                        <div className="text-xl font-medium mb-2"><p className="font-medium text-orange-600 inline">Add Your Opinion</p> about this product</div>
+                    </div>
+                </div>
+
+                <div className="text-center mt-7 relative">
+                    <textarea onChange={(e)=> setComment(e.target.value)} placeholder="type..." className="focus:outline-none border-gray-600/40 border-2 rounded-md py-2 pr-20 px-3 h-40 w-[80%] resize-none" value={comment} />
+                    <div onClick={sendComment} className="bg-orange-500 text-white w-max px-5 py-2 rounded-lg absolute bottom-3 right-[10.5%] hover:cursor-pointer"><IoSend /></div>
+                </div>
+            </div>
+
+
+
+
             <div className="flex flex-col items-center">
                 <div className="flex flex-col items-center mb-4 mt-16">
                     <p className="text-3xl font-medium">Featured <span className="font-medium text-orange-600">Products</span></p>
