@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema({
     googleId: {type: String},
     imageUrl: {type: String, default: "/profiles/profile.jpg"},
     cartItems: {type: Object, default: {}},
-    role: {type: String}
+    role: {type: String, default: "customer"}
 })
 
 userSchema.statics.signup = async function (username, email, password, role) {

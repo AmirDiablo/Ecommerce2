@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import Address from "./Address";
+import Product from "./ProductModel";
 
 const orderSchema = new mongoose.Schema({
     userId: {type: String, required: true, ref: "User"},

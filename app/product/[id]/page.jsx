@@ -12,6 +12,8 @@ import React from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { IoSend } from "react-icons/io5";
+import { AiOutlineLike } from "react-icons/ai";
+import { AiOutlineDislike } from "react-icons/ai";
 
 const Product = () => {
 
@@ -23,6 +25,8 @@ const Product = () => {
     const [productData, setProductData] = useState(null);
     const [rating, setRating] = useState(0)
     const [comment, setComment] = useState("")
+    const [comments, setComments] = useState([]) //i should update this list not overwrite it
+    const [page, setPage] = useState(0)
 
     const fetchProductData = async () => {
         const product = products.find(product => product._id === id);
@@ -48,7 +52,7 @@ const Product = () => {
     const sendComment = async ()=> {
         try {
             const token = userData?.token
-            const {data} = await axios.post("/api/product/comment", {productId: id, text: comment}, {headers: {Authorization: `Bearer ${token}`}})
+            const {data} = await axios.post("/api/product/comment/post-comment", {productId: id, text: comment}, {headers: {Authorization: `Bearer ${token}`}})
 
             if(data.success) {
                 toast.success("Comment submitted")
@@ -77,11 +81,29 @@ const Product = () => {
         }
     }
 
+    const fetchComments = async () => {
+        try {
+            const {data} = await axios.get(`/api/product/comment/get-comment?productId=${id}&page=${page}`)
+            if(data.success) {
+                const productCommnets = [...comments, ...data.comments]
+                setComments(productCommnets)
+            }else{
+                toast.error(data.message)
+            }
+        } catch (error) {
+            toast.error(error.message)
+        }
+    }
+
     useEffect(()=> {
        if(userData) {
         fetchUserRating()
        }
     }, [userData])
+
+    useEffect(()=> {
+        fetchComments()
+    }, [])
 
     useEffect(() => {
         fetchProductData();
@@ -183,26 +205,69 @@ const Product = () => {
             </div>
 
 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 relative">
+            {/* ستون سمت چپ - فرم نظر */}
+            <div className="md:sticky md:top-5 md:h-fit text-center pt-10">
+                <div className="md:flex md:items-center justify-between">
+                <div className="flex items-center gap-0.5 md:*:h-[2vw] md:*:w-[2vw] *:w-10 *:h-10 *:hover:cursor-pointer justify-center md:order-2 mb-2">
+                    <Image onClick={() => rate(1)} src={rating >= 1 ? assets.star_icon : assets.star_dull_icon} alt="star_icon" />
+                    <Image onClick={() => rate(2)} src={rating >= 2 ? assets.star_icon : assets.star_dull_icon} alt="star_icon" />
+                    <Image onClick={() => rate(3)} src={rating >= 3 ? assets.star_icon : assets.star_dull_icon} alt="star_icon" />
+                    <Image onClick={() => rate(4)} src={rating >= 4 ? assets.star_icon : assets.star_dull_icon} alt="star_icon" />
+                    <Image onClick={() => rate(5)} src={rating >= 5 ? assets.star_icon : assets.star_dull_icon} alt="star_dull_icon" />
+                </div>
 
-            <div className="text-center md:space-y-0 pt-10"> 
-                <div className="md:flex md:items-center md:justify-between md:px-40">
-                    <div className="flex items-center gap-0.5 *:hover:cursor-pointer justify-center md:order-2 mb-2">
-                        <Image onClick={()=> rate(1)} className="h-10 w-10" src={rating >= 1 ? assets.star_icon : assets.star_dull_icon} alt="star_icon" />
-                        <Image onClick={()=> rate(2)} className="h-10 w-10" src={rating >= 2 ? assets.star_icon : assets.star_dull_icon} alt="star_icon" />
-                        <Image onClick={()=> rate(3)} className="h-10 w-10" src={rating >= 3 ? assets.star_icon : assets.star_dull_icon} alt="star_icon" />
-                        <Image onClick={()=> rate(4)} className="h-10 w-10" src={rating >= 4 ? assets.star_icon : assets.star_dull_icon} alt="star_icon" />
-                        <Image onClick={()=> rate(5)} className="h-10 w-10" src={rating >= 5 ? assets.star_icon : assets.star_dull_icon} alt="star_dull_icon" />
+                <div className="md:order-1">
+                    <div className="text-xl md:text-[1.5vw] font-medium mb-2">
+                    <p className="font-medium text-orange-600 inline">Add Your Opinion</p> about this product
                     </div>
-
-                    <div className="md:order-1">
-                        <div className="text-xl font-medium mb-2"><p className="font-medium text-orange-600 inline">Add Your Opinion</p> about this product</div>
-                    </div>
+                </div>
                 </div>
 
                 <div className="text-center mt-7 relative">
-                    <textarea onChange={(e)=> setComment(e.target.value)} placeholder="type..." className="focus:outline-none border-gray-600/40 border-2 rounded-md py-2 pr-20 px-3 h-40 w-[80%] resize-none" value={comment} />
-                    <div onClick={sendComment} className="bg-orange-500 text-white w-max px-5 py-2 rounded-lg absolute bottom-3 right-[10.5%] hover:cursor-pointer"><IoSend /></div>
+                <textarea
+                    onChange={(e) => setComment(e.target.value)}
+                    placeholder="type..."
+                    className="focus:outline-none md:w-[100%] border-gray-600/40 border-2 rounded-md py-2 pr-20 px-3 h-40 w-[80%] resize-none"
+                    value={comment}
+                />
+                <div
+                    onClick={sendComment}
+                    className="bg-orange-500 text-white w-max px-5 py-2 rounded-lg absolute bottom-3 right-[10.5%] md:right-1 hover:cursor-pointer"
+                >
+                    <IoSend />
                 </div>
+                </div>
+            </div>
+
+            {/* ستون سمت راست - لیست کامنت‌ها */}
+            <div className="md:w-full">
+                {comments.map((comment, index) => (
+                <div className="border-gray-600/30 border-y-[1px] py-5" key={index}>
+                    <div className="flex items-center justify-between">
+                    <div className="font-[600] gap-3 flex items-center">
+                        <Image
+                        src={comment.userId.imageUrl}
+                        width={40}
+                        height={40}
+                        alt="profile"
+                        className="rounded-full aspect-square object-cover"
+                        />
+                        <p>{comment.userId.name}</p>
+                        <p className="text-orange-500 font-[400]">. {comment.userId.role}</p>
+                    </div>
+                    <p className="text-gray-500">{new Date(comment.date).toLocaleDateString()}</p>
+                    </div>
+
+                    {comment.text}
+
+                    <div className="flex items-center gap-2 text-2xl mt-5">
+                    <AiOutlineLike /> <p className="text-[13px] -ml-1">{comment.like.length}</p>
+                    <AiOutlineDislike /> <p className="text-[13px] -ml-1">{comment.dislike.length}</p>
+                    </div>
+                </div>
+                ))}
+            </div>
             </div>
 
 
