@@ -14,6 +14,8 @@ import toast from "react-hot-toast";
 import { IoSend } from "react-icons/io5";
 import { AiOutlineLike } from "react-icons/ai";
 import { AiOutlineDislike } from "react-icons/ai";
+import { AiFillLike } from "react-icons/ai";
+import { AiFillDislike } from "react-icons/ai";
 
 const Product = () => {
 
@@ -108,6 +110,39 @@ const Product = () => {
             toast.error(error.message)
         }
     }
+
+    const likeComment = async (commentId) => {
+        try {
+            const token = userData?.token
+            const {data} = await axios.post("/api/product/comment/like-comment", {commentId}, {headers: {Authorization: `Bearer ${token}`}})
+
+            if(data.success) {
+                toast.success(data.message)
+            }else{
+                toast.error(data.message)
+            }
+
+        } catch (error) {
+            toast.error(error.message)
+        }
+    }
+
+    const dislikeComment = async (commentId) => {
+        try {
+            const token = userData?.token
+            const {data} = await axios.post("/api/product/comment/dislike-comment", {commentId}, {headers: {Authorization: `Bearer ${token}`}})
+
+            if(data.success) {
+                toast.success(data.message)
+            }else{
+                toast.error(data.message)
+            }
+
+        } catch (error) {
+            toast.error(error.message)
+        }
+    }
+
 
     useEffect(()=> {
        if(userData) {
@@ -277,8 +312,8 @@ const Product = () => {
                     <p className="mt-2">{comment.text}</p>
 
                     <div className="flex items-center gap-2 text-2xl mt-5 *:hover:cursor-pointer">
-                        <AiOutlineLike /> <p className="text-[13px] -ml-1">{comment.like.length}</p>
-                        <AiOutlineDislike /> <p className="text-[13px] -ml-1">{comment.dislike.length}</p>
+                        {!comment.like.includes(userData._id) ? <AiOutlineLike onClick={()=> likeComment(comment._id)} /> : <AiFillLike className="text-green-600" onClick={()=> likeComment(comment._id)} /> } <p className="text-[13px] -ml-1">{comment.like.length}</p>
+                        {!comment.dislike.includes(userData._id) ? <AiOutlineDislike onClick={()=> dislikeComment(comment._id)} /> : <AiFillDislike className="text-red-600" onClick={()=> dislikeComment(comment._id)} />} <p className="text-[13px] -ml-1">{comment.dislike.length}</p>
                     </div>
                 </div>
                 ))}
