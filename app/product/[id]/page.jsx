@@ -24,6 +24,7 @@ const Product = () => {
     const [mainImage, setMainImage] = useState(null);
     const [productData, setProductData] = useState(null);
     const [rating, setRating] = useState(0)
+    const [productRating, setProductRating] = useState(0)
     const [comment, setComment] = useState("")
     const [comments, setComments] = useState([]) //i should update this list not overwrite it
     const [page, setPage] = useState(0)
@@ -36,7 +37,7 @@ const Product = () => {
     const rate = async (value)=> {
         try {
             const token = userData?.token
-            const {data} = await axios.post("/api/product/rating", {productId: id, rating: value}, {headers: {Authorization: `Bearer ${token}`}})
+            const {data} = await axios.post("/api/product/rating/post-rating", {productId: id, rating: value}, {headers: {Authorization: `Bearer ${token}`}})
 
             if(data.success) {
                 toast.success("Rating submitted")
@@ -95,6 +96,19 @@ const Product = () => {
         }
     }
 
+    const fetchRating = async ()=> {
+        try {
+            const {data} = await axios.get(`/api/product/rating/get-rating?productId=${id}`)
+            if(data.success) {
+                setProductRating(data.rating)
+            }else{
+                setProductRating(0)
+            }
+        } catch (error) {
+            toast.error(error.message)
+        }
+    }
+
     useEffect(()=> {
        if(userData) {
         fetchUserRating()
@@ -103,6 +117,7 @@ const Product = () => {
 
     useEffect(()=> {
         fetchComments()
+        fetchRating()
     }, [])
 
     useEffect(() => {
@@ -150,17 +165,17 @@ const Product = () => {
                     </h1>
                     <div className="flex items-center gap-2">
                         <div className="flex items-center gap-0.5">
-                            <Image className="h-4 w-4" src={assets.star_icon} alt="star_icon" />
-                            <Image className="h-4 w-4" src={assets.star_icon} alt="star_icon" />
-                            <Image className="h-4 w-4" src={assets.star_icon} alt="star_icon" />
-                            <Image className="h-4 w-4" src={assets.star_icon} alt="star_icon" />
+                            <Image className="h-4 w-4" src={productRating >= 1 ? assets.star_icon : assets.star_dull_icon} alt="star_icon" />
+                            <Image className="h-4 w-4" src={productRating >= 2 ? assets.star_icon : assets.star_dull_icon} alt="star_icon" />
+                            <Image className="h-4 w-4" src={productRating >= 3 ? assets.star_icon : assets.star_dull_icon} alt="star_icon" />
+                            <Image className="h-4 w-4" src={productRating >= 4 ? assets.star_icon : assets.star_dull_icon} alt="star_icon" />
                             <Image
                                 className="h-4 w-4"
-                                src={assets.star_dull_icon}
+                                src={productRating >= 5 ? assets.star_icon : assets.star_dull_icon}
                                 alt="star_dull_icon"
                             />
                         </div>
-                        <p>(4.5)</p>
+                        <p>({productRating})</p>
                     </div>
                     <p className="text-gray-600 mt-3">
                         {productData.description}
@@ -245,25 +260,25 @@ const Product = () => {
                 {comments.map((comment, index) => (
                 <div className="border-gray-600/30 border-y-[1px] py-5" key={index}>
                     <div className="flex items-center justify-between">
-                    <div className="font-[600] gap-3 flex items-center">
-                        <Image
-                        src={comment.userId.imageUrl}
-                        width={40}
-                        height={40}
-                        alt="profile"
-                        className="rounded-full aspect-square object-cover"
-                        />
-                        <p>{comment.userId.name}</p>
-                        <p className="text-orange-500 font-[400]">. {comment.userId.role}</p>
-                    </div>
-                    <p className="text-gray-500">{new Date(comment.date).toLocaleDateString()}</p>
+                        <div className="font-[600] gap-3 flex items-center">
+                            <Image
+                            src={comment.userId.imageUrl}
+                            width={40}
+                            height={40}
+                            alt="profile"
+                            className="rounded-full aspect-square object-cover"
+                            />
+                            <p>{comment.userId.name}</p>
+                            <p className="text-orange-500 font-[400]">. {comment.userId.role}</p>
+                        </div>
+                        <p className="text-gray-500">{new Date(comment.date).toLocaleDateString()}</p>
                     </div>
 
-                    {comment.text}
+                    <p className="mt-2">{comment.text}</p>
 
-                    <div className="flex items-center gap-2 text-2xl mt-5">
-                    <AiOutlineLike /> <p className="text-[13px] -ml-1">{comment.like.length}</p>
-                    <AiOutlineDislike /> <p className="text-[13px] -ml-1">{comment.dislike.length}</p>
+                    <div className="flex items-center gap-2 text-2xl mt-5 *:hover:cursor-pointer">
+                        <AiOutlineLike /> <p className="text-[13px] -ml-1">{comment.like.length}</p>
+                        <AiOutlineDislike /> <p className="text-[13px] -ml-1">{comment.dislike.length}</p>
                     </div>
                 </div>
                 ))}
