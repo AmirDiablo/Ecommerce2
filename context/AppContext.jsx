@@ -151,8 +151,6 @@ export const AppContextProvider = (props) => {
         }
     }, [userData])
 
-    console.log(favList)
-
     const value = {
         currency, router,
         isSeller, setIsSeller,

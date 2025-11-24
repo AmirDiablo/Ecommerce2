@@ -20,6 +20,8 @@ export async function GET(request) {
 
         const comments = await Comment.find({productId}).limit(limit).skip(skip).populate("userId")
 
+        console.log(comments.length)
+
         return NextResponse.json({success: true, comments})
 
     } catch (error) {

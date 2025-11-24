@@ -15,9 +15,12 @@ export async function POST(request) {
 
         await dbConnect()
 
-        const comment = await Comment.create({userId: _id, productId, text, date: Date.now()})
+        const postComment = await Comment.create({userId: _id, productId, text, date: Date.now()})
+        const comment = await Comment.findOne({_id: postComment._id}).populate("userId")
 
-        return NextResponse.json({success: true, message: "Comment submitted successfully"})
+        console.log(comment)
+        
+        return NextResponse.json({success: true, comment, message: "Comment submitted successfully"})
 
     } catch (error) {
         return NextResponse.json({success: false, message: error.message})
