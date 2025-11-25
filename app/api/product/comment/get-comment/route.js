@@ -18,9 +18,16 @@ export async function GET(request) {
 
         await dbConnect()
 
-        const comments = await Comment.find({productId}).limit(limit).skip(skip).populate("userId")
+        const comments = await Comment.find({ productId })
+        .limit(limit)
+        .skip(skip)
+        .populate("userId")
+        .lean(); // خروجی plain object می‌دهد
 
-        console.log(comments.length)
+        for (let i = 0; i < comments.length; i++) {
+            const replies = await Comment.find({ replyTo: comments[i]._id }).populate('userId').lean();
+            comments[i].replies = replies;
+        }
 
         return NextResponse.json({success: true, comments})
 

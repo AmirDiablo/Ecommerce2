@@ -6,6 +6,35 @@
     scroll-behavior: smooth;
 }
 
+summary::-webkit-details-marker {
+  display: none; /* برای کروم، سافاری */
+}
+
+summary::marker {
+  display: none; /* برای فایرفاکس */
+}
+
+summary {
+  list-style: none; /* مطمئن شو هیچ marker پیش‌فرضی نیست */
+  cursor: pointer;
+  position: relative;
+  padding-left: 1.2em; /* جا برای فلش */
+}
+
+summary::before {
+  content: ">"; /* فلش دلخواه */
+  position: absolute;
+  left: 0;
+  top: 0;
+  transition: transform 0.2s ease;
+}
+
+details[open] summary::before {
+  transform: rotate(90deg); /* وقتی باز شد بچرخد */
+}
+
+
+
 @layer base {
     input[type="number"]::-webkit-inner-spin-button,
     input[type="number"]::-webkit-outer-spin-button {

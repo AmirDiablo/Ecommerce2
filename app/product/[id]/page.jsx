@@ -300,9 +300,9 @@ const Product = () => {
             </div>
 
             {/* ستون سمت راست - لیست کامنت‌ها */}
-            <div className="md:w-full">
-                {comments.map((comment, index) => (
-                <div className="border-gray-600/30 border-y-[1px] py-5" key={index}>
+            <div className="md:w-full divide-y divide-gray-300">
+                {comments?.map((comment, index) => (
+                <div className="py-5" key={index}>
                     <div className="flex items-center justify-between">
                         <div className="font-[600] gap-3 flex items-center">
                             <Image
@@ -322,12 +322,47 @@ const Product = () => {
 
                     <div className="flex justify-between items-center mt-5">
                         <div className="flex items-center gap-2 text-2xl *:hover:cursor-pointer">
-                            {!comment.like.includes(userData._id) ? <AiOutlineLike onClick={()=> likeComment(comment._id)} /> : <AiFillLike className="text-green-600" onClick={()=> likeComment(comment._id)} /> } <p className="text-[13px] -ml-1">{comment.like.length}</p>
-                            {!comment.dislike.includes(userData._id) ? <AiOutlineDislike onClick={()=> dislikeComment(comment._id)} /> : <AiFillDislike className="text-red-600" onClick={()=> dislikeComment(comment._id)} />} <p className="text-[13px] -ml-1">{comment.dislike.length}</p>
+                            {!comment.like.includes(userData._id) ? <AiOutlineLike onClick={()=> likeComment(comment._id)} /> : <AiFillLike className="text-green-600" onClick={()=> likeComment(comment._id)} /> } <p className="text-[13px] -ml-1">{comment.like?.length}</p>
+                            {!comment.dislike.includes(userData._id) ? <AiOutlineDislike onClick={()=> dislikeComment(comment._id)} /> : <AiFillDislike className="text-red-600" onClick={()=> dislikeComment(comment._id)} />} <p className="text-[13px] -ml-1">{comment.dislike?.length}</p>
                             <MdReply onClick={()=> setIsReplying(true)} className="text-blue-500 hover:cursor-pointer text-2xl cursor-pointer" />
                         </div>
-                        <p className="text-blue-500">see replies</p>
+
                     </div>
+
+                    {/*  replies section /////////////////////////////////////////////////////////////////////////////// */}
+                       {comment.replies?.length != 0 && <details className="">
+                            <summary className="text-blue-500 hover:cursor-pointer">see replies</summary>
+                            <div className="pl-20 divide-y divide-gray-300">
+                                {comment.replies?.map((reply, index)=> (
+                                    <div className="py-5" key={index}>
+                                        <div className="flex items-center justify-between">
+                                            <div className="font-[600] gap-3 flex items-center">
+                                                <Image
+                                                src={reply.userId.imageUrl}
+                                                width={40}
+                                                height={40}
+                                                alt="profile"
+                                                className="rounded-full aspect-square object-cover"
+                                                />
+                                                <p>{reply.userId.name}</p>
+                                                <p className="text-orange-500 font-[400]">. {reply.userId.role}</p>
+                                            </div>
+                                            <p className="text-gray-500">{new Date(reply.date).toLocaleDateString()}</p>
+                                        </div>
+
+                                        <p className="mt-2">{reply.text}</p>
+
+                                        <div className="flex justify-between items-center mt-5">
+                                            <div className="flex items-center gap-2 text-2xl *:hover:cursor-pointer">
+                                                {!reply.like.includes(userData._id) ? <AiOutlineLike onClick={()=> likeComment(reply._id)} /> : <AiFillLike className="text-green-600" onClick={()=> likeComment(comment._id)} /> } <p className="text-[13px] -ml-1">{comment.like?.length}</p>
+                                                {!reply.dislike.includes(userData._id) ? <AiOutlineDislike onClick={()=> dislikeComment(reply._id)} /> : <AiFillDislike className="text-red-600" onClick={()=> dislikeComment(comment._id)} />} <p className="text-[13px] -ml-1">{comment.dislike?.length}</p>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                ))}
+                            </div>
+                        </details>}
 
                     {isReplying && <Reply productId={id} commentId={comment._id} setIsReplying={setIsReplying} />}
                     {isReplying && <div className="bg-black/5 fixed -top-10 bottom-0 left-0 right-0 z-40"></div>}
