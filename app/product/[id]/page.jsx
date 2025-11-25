@@ -17,6 +17,7 @@ import { AiOutlineDislike } from "react-icons/ai";
 import { AiFillLike } from "react-icons/ai";
 import { AiFillDislike } from "react-icons/ai";
 import { MdReply } from "react-icons/md";
+import Reply from "@/components/Reply";
 
 const Product = () => {
 
@@ -30,6 +31,7 @@ const Product = () => {
     const [productRating, setProductRating] = useState(0)
     const [comment, setComment] = useState("")
     const [comments, setComments] = useState([])
+    const [isReplying, setIsReplying] = useState(false)
 
     const [page, setPage] = useState(0)
 
@@ -322,19 +324,22 @@ const Product = () => {
                         <div className="flex items-center gap-2 text-2xl *:hover:cursor-pointer">
                             {!comment.like.includes(userData._id) ? <AiOutlineLike onClick={()=> likeComment(comment._id)} /> : <AiFillLike className="text-green-600" onClick={()=> likeComment(comment._id)} /> } <p className="text-[13px] -ml-1">{comment.like.length}</p>
                             {!comment.dislike.includes(userData._id) ? <AiOutlineDislike onClick={()=> dislikeComment(comment._id)} /> : <AiFillDislike className="text-red-600" onClick={()=> dislikeComment(comment._id)} />} <p className="text-[13px] -ml-1">{comment.dislike.length}</p>
-                            <MdReply className="text-blue-500 text-2xl cursor-pointer" />
+                            <MdReply onClick={()=> setIsReplying(true)} className="text-blue-500 hover:cursor-pointer text-2xl cursor-pointer" />
                         </div>
-                        <p className="text-blue-500">see more replies</p>
+                        <p className="text-blue-500">see replies</p>
                     </div>
+
+                    {isReplying && <Reply productId={id} commentId={comment._id} setIsReplying={setIsReplying} />}
+                    {isReplying && <div className="bg-black/5 fixed -top-10 bottom-0 left-0 right-0 z-40"></div>}
                 </div>
                 ))}
 
-                <p onClick={()=> {setPage(pre=> pre+1)}} className="text-orange-500 mt-2 hover:cursor-pointer">see more ...</p>
+                <p onClick={()=> {setPage(pre=> pre+1)}} className="text-orange-500 mt-2 hover:cursor-pointer w-max">see more ...</p>
             </div>
             </div>
 
 
-
+            
 
             <div className="flex flex-col items-center">
                 <div className="flex flex-col items-center mb-4 mt-16">
