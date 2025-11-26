@@ -18,11 +18,45 @@ export async function GET(request) {
 
         await dbConnect()
 
-        const comments = await Comment.find({ productId, replyTo: null })
-        .limit(limit)
-        .skip(skip)
-        .populate("userId")
-        .lean(); // خروجی plain object می‌دهد
+        // مثال: گرفتن کامنت‌ها مرتب‌شده بر اساس امتیاز
+        const comments = await Comment.aggregate([
+            {
+                $match: {
+                    productId: productId,
+                    replyTo: null
+                }
+            },
+            {
+                $addFields: {
+                score: { $subtract: [ { $size: "$like" }, { $size: "$dislike" } ] }
+                }
+            },
+            { $sort: { score: -1, date: -1 } },
+            { $skip: skip },
+            { $limit: limit },
+            {
+                $lookup: {
+                from: "users",
+                localField: "userId",
+                foreignField: "_id",
+                as: "user"
+                }
+            },
+            { $unwind: "$user" },
+            {
+                $project: {
+                _id: 1,
+                text: 1,
+                productId: 1,
+                replyTo: 1,
+                like: 1,
+                dislike: 1,
+                date: 1,
+                userId: "$user" // جایگزین کردن user به جای userId
+                }
+            }
+        ]);
+
 
         for (let i = 0; i < comments.length; i++) {
             const replies = await Comment.find({ replyTo: comments[i]._id }).populate('userId').lean();
