@@ -18,7 +18,7 @@ export async function GET(request) {
 
         await dbConnect()
 
-        const comments = await Comment.find({ productId })
+        const comments = await Comment.find({ productId, replyTo: null })
         .limit(limit)
         .skip(skip)
         .populate("userId")

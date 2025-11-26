@@ -124,6 +124,31 @@ const Product = () => {
 
             if(data.success) {
                 toast.success(data.message)
+                
+                // آپدیت فقط همان کامنت در state محلی
+                setComments(prevComments =>
+                prevComments.map(item => {
+
+                        if (item._id === commentId) {
+                            const alreadyLiked = item.like.includes(userData._id);
+                            const isDisliked = item.dislike.includes(userData._id)
+
+                            return {
+                                ...item,
+                                dislike: isDisliked
+                                    ? item.dislike.filter(id => id !== userData._id) // حذف دیس‌لایک
+                                    : item.dislike, // اگر کاربر دیس‌لایک نکرده بود، همون آرایه قبلی رو نگه دار
+                                like: alreadyLiked
+                                    ? item.like.filter(id => id !== userData._id) // حذف لایک
+                                    : [...item.like, userData._id] // اضافه کردن لایک
+                            };
+
+                        }
+                        return item;
+                    })
+                );
+
+
             }else{
                 toast.error(data.message)
             }
@@ -140,6 +165,24 @@ const Product = () => {
 
             if(data.success) {
                 toast.success(data.message)
+
+                setComments(prevComments =>
+                prevComments.map(item => {
+                        if (item._id === commentId) {
+                            const alreadyDisliked = item.dislike.includes(userData._id);
+                            const isLiked= item.like.includes(userData._id)
+
+                            return {
+                                ...item,
+                                like: isLiked ? item.like.filter(id=> id !== userData._id) : item.like,
+                                dislike: alreadyDisliked
+                                    ? item.dislike.filter(id => id !== userData._id) // حذف لایک
+                                    : [...item.dislike, userData._id] // اضافه کردن لایک
+                            };
+                        }
+                        return item;
+                    })
+                );
             }else{
                 toast.error(data.message)
             }
@@ -323,7 +366,7 @@ const Product = () => {
                     <div className="flex justify-between items-center mt-5">
                         <div className="flex items-center gap-2 text-2xl *:hover:cursor-pointer">
                             {!comment.like.includes(userData._id) ? <AiOutlineLike onClick={()=> likeComment(comment._id)} /> : <AiFillLike className="text-green-600" onClick={()=> likeComment(comment._id)} /> } <p className="text-[13px] -ml-1">{comment.like?.length}</p>
-                            {!comment.dislike.includes(userData._id) ? <AiOutlineDislike onClick={()=> dislikeComment(comment._id)} /> : <AiFillDislike className="text-red-600" onClick={()=> dislikeComment(comment._id)} />} <p className="text-[13px] -ml-1">{comment.dislike?.length}</p>
+                            {!comment?.dislike?.includes(userData._id) ? <AiOutlineDislike onClick={()=> dislikeComment(comment._id)} /> : <AiFillDislike className="text-red-600" onClick={()=> dislikeComment(comment._id)} />} <p className="text-[13px] -ml-1">{comment.dislike?.length}</p>
                             <MdReply onClick={()=> setIsReplying(true)} className="text-blue-500 hover:cursor-pointer text-2xl cursor-pointer" />
                         </div>
 
