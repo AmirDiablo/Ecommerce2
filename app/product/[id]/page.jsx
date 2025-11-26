@@ -32,6 +32,7 @@ const Product = () => {
     const [comment, setComment] = useState("")
     const [comments, setComments] = useState([])
     const [isReplying, setIsReplying] = useState(false)
+    const [commentId, setCommentId] = useState("")
 
     const [page, setPage] = useState(0)
 
@@ -367,7 +368,7 @@ const Product = () => {
                         <div className="flex items-center gap-2 text-2xl *:hover:cursor-pointer">
                             {!comment.like.includes(userData._id) ? <AiOutlineLike onClick={()=> likeComment(comment._id)} /> : <AiFillLike className="text-green-600" onClick={()=> likeComment(comment._id)} /> } <p className="text-[13px] -ml-1">{comment.like?.length}</p>
                             {!comment?.dislike?.includes(userData._id) ? <AiOutlineDislike onClick={()=> dislikeComment(comment._id)} /> : <AiFillDislike className="text-red-600" onClick={()=> dislikeComment(comment._id)} />} <p className="text-[13px] -ml-1">{comment.dislike?.length}</p>
-                            <MdReply onClick={()=> setIsReplying(true)} className="text-blue-500 hover:cursor-pointer text-2xl cursor-pointer" />
+                            <MdReply onClick={()=> {setIsReplying(true), setCommentId(comment._id)}} className="text-blue-500 hover:cursor-pointer text-2xl cursor-pointer" />
                         </div>
 
                     </div>
@@ -397,8 +398,8 @@ const Product = () => {
 
                                         <div className="flex justify-between items-center mt-5">
                                             <div className="flex items-center gap-2 text-2xl *:hover:cursor-pointer">
-                                                {!reply.like.includes(userData._id) ? <AiOutlineLike onClick={()=> likeComment(reply._id)} /> : <AiFillLike className="text-green-600" onClick={()=> likeComment(comment._id)} /> } <p className="text-[13px] -ml-1">{comment.like?.length}</p>
-                                                {!reply.dislike.includes(userData._id) ? <AiOutlineDislike onClick={()=> dislikeComment(reply._id)} /> : <AiFillDislike className="text-red-600" onClick={()=> dislikeComment(comment._id)} />} <p className="text-[13px] -ml-1">{comment.dislike?.length}</p>
+                                                {!reply.like.includes(userData._id) ? <AiOutlineLike onClick={()=> likeComment(reply._id)} /> : <AiFillLike className="text-green-600" onClick={()=> likeComment(reply._id)} /> } <p className="text-[13px] -ml-1">{reply.like?.length}</p>
+                                                {!reply.dislike.includes(userData._id) ? <AiOutlineDislike onClick={()=> dislikeComment(reply._id)} /> : <AiFillDislike className="text-red-600" onClick={()=> dislikeComment(reply._id)} />} <p className="text-[13px] -ml-1">{reply.dislike?.length}</p>
                                             </div>
                                         </div>
 
@@ -406,9 +407,6 @@ const Product = () => {
                                 ))}
                             </div>
                         </details>}
-
-                    {isReplying && <Reply productId={id} commentId={comment._id} setIsReplying={setIsReplying} />}
-                    {isReplying && <div className="bg-black/5 fixed -top-10 bottom-0 left-0 right-0 z-40"></div>}
                 </div>
                 ))}
 
@@ -417,7 +415,8 @@ const Product = () => {
             </div>
 
 
-            
+            {isReplying && <Reply productId={id} commentId={commentId} setIsReplying={setIsReplying} />}
+            {isReplying && <div className="bg-black/5 fixed -top-10 bottom-0 left-0 right-0 z-40"></div>}
 
             <div className="flex flex-col items-center">
                 <div className="flex flex-col items-center mb-4 mt-16">
