@@ -3,18 +3,40 @@ import dbConnect from "@/config/db";
 import Product from "@/models/ProductModel";
 import { NextResponse } from "next/server";
 
-
 export async function GET(request) {
-    try {
-        const { searchParams } = new URL(request.url);
-        const q = searchParams.get("q")?.toLowerCase() || "";
+  try {
+    const { searchParams } = new URL(request.url);
+    const q = searchParams.get("q")?.toLowerCase() || "";
+    const category = searchParams.get("category");
+    const price = searchParams.get("price");
+    const rate = searchParams.get("rate");
 
-        await dbConnect()
+    await dbConnect();
 
-        const products = await Product.find({ $text: { $search: q } })
+    const query = {};
 
-        return NextResponse.json({success: true, products})
-    } catch (error) {
-        return NextResponse.json({success: false, message: "something went wrong..."})
+    if (q) {
+      query.$text = { $search: q };
     }
+
+    if (category) {
+      query.category = category;
+    }
+
+    if (price) {
+      query.offerPrice = { $lte: parseFloat(price) }; // تبدیل به عدد اعشاری
+    }
+
+    if (rate) {
+      query.rate = { $gte: parseFloat(rate) };
+    }
+
+    const products = await Product.find(query);
+
+    return NextResponse.json({ success: true, products });
+  } catch (error) {
+    return NextResponse.json({ success: false, message: error.message });
+  }
 }
+
+

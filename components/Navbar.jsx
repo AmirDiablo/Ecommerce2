@@ -13,9 +13,9 @@ import SearchBar from "./SearchBar";
 
 export default function Navbar () {
 
-  const { isSeller, router, userData } = useAppContext();
+  const { isSeller, router, userData, menuIsOpen, setMenuIsOpen } = useAppContext();
   const [isOpen, setIsOpen] = useState(false)
-  const [menuIsOpen, setMenuIsOpen] = useState(false)
+  /* const [menuIsOpen, setMenuIsOpen] = useState(false) */
   const [loginisOpen, setLoginisOpen] = useState(false);
   const [signUpisOpen, setSignUpisOpen] = useState(false);
 

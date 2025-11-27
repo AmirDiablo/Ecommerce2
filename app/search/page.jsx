@@ -8,17 +8,23 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/router";
 
 
 export default function Search() {
+    /* const router = useRouter()
+    const {category, price, rate} = router.query */
     const searchParams = useSearchParams();
     const q = searchParams.get("q");
+    const category = searchParams.get("category");
+    const price = searchParams.get("price");
+    const rate = searchParams.get("rate");
     const [products, setProducts] = useState([])
     const [loading, setLoading] = useState(true)
 
     const findResults = async ()=> {
         try {
-            const {data} = await axios.get(`/api/product/search?q=${q}`)
+            const {data} = await axios.get(`/api/product/search?q=${q}&category=${category}&price=${price}&rate=${rate}`)
 
             if(data.success) {
                 setProducts(data.products)
@@ -34,7 +40,7 @@ export default function Search() {
 
     useEffect(()=> {
         findResults()
-    }, [q])
+    }, [q, category, price, rate])
 
     return products ? (
         <>
