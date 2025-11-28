@@ -1,4 +1,5 @@
 import dbConnect from "@/config/db";
+import Product from "@/models/ProductModel";
 import Rate from "@/models/Rate";
 import { NextResponse } from "next/server";
 
@@ -14,7 +15,7 @@ export async function GET(request) {
 
         await dbConnect()
 
-        const ratingData = await Rate.aggregate([
+       /*  const ratingData = await Rate.aggregate([
             {
                 $match: {
                 productId: productId
@@ -34,9 +35,14 @@ export async function GET(request) {
         }
 
         const { totalRating, ratingCount } = ratingData[0]
-        const rating = totalRating / ratingCount
+        const rating = totalRating / ratingCount */
 
-        return NextResponse.json({success: true, rating: rating.toFixed(1)})
+
+        const product = await Product.findOne({_id: productId})
+        const rating = product.rate
+        const count = product.rateCount
+
+        return NextResponse.json({success: true, rating: rating.toFixed(1), count: count})
 
     } catch (error) {
         return NextResponse.json({success: false, message: error.message})

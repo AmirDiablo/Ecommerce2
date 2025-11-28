@@ -8,7 +8,9 @@ const productSchema = new mongoose.Schema({
     offerPrice: {type: Number, required: true},
     image: {type: [String], required: true},
     category: {type: String, required: true},
-    date: {type: Number, required: true}
+    date: {type: Number, required: true},
+    rate: {type: Number, default: 0},
+    rateCount: {type: Number, default: 0}
 })
 
 productSchema.index({name: "text", description: "text", category: "text"})
