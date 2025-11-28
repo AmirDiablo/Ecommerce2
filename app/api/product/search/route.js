@@ -10,6 +10,10 @@ export async function GET(request) {
     const category = searchParams.get("category");
     const price = searchParams.get("price");
     const rate = searchParams.get("rate");
+    const page = searchParams.get("page") || 0;
+
+    const limit = 10;
+    const skip = page * limit
 
     await dbConnect();
 
@@ -31,9 +35,13 @@ export async function GET(request) {
       query.rate = { $gte: parseFloat(rate) };
     }
 
-    const products = await Product.find(query);
+    const products = await Product.find(query).skip(skip).limit(limit)
+    const numberOfResults = await Product.countDocuments(query)
 
-    return NextResponse.json({ success: true, products });
+    const filledPages = numberOfResults / limit
+    const count = Math.ceil(filledPages)
+
+    return NextResponse.json({ success: true, products, count: count });
   } catch (error) {
     return NextResponse.json({ success: false, message: error.message });
   }
