@@ -22,13 +22,15 @@ export const AppContextProvider = (props) => {
     const [cartItems, setCartItems] = useState({})
     const [favList, setFavList] = useState([])
     const [menuIsOpen, setMenuIsOpen] = useState(false)
+    const [pageCount, setPageCount] = useState(0)
 
-    const fetchProductData = async () => {
+    const fetchProductData = async (page) => {
         try {
-            const {data} = await axios.get("/api/product/list")
+            const {data} = await axios.get(`/api/product/list`)
 
             if(data.success) {
-                setProducts(data.products)
+                setProducts(data.products);
+                setPageCount(data.count)
             }else{
                 toast.error(data.message)
             }
@@ -162,7 +164,8 @@ export const AppContextProvider = (props) => {
         getCartCount, getCartAmount,
         setUserData, setFavList,
         favList, setMenuIsOpen,
-        menuIsOpen
+        menuIsOpen, setPageCount, 
+        pageCount
     }
 
     return (
