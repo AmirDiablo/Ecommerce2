@@ -5,20 +5,27 @@ import Link from "next/link";
 import { RxCross1 } from "react-icons/rx";
 import GoogleButton from "./GoogleButton";
 import { useAppContext } from "@/context/AppContext";
+import ReCAPTCHA from "react-google-recaptcha";
 
 export default function Login({ setLoginisOpen, setSignUpisOpen }) {
-  const {fetchUserData} = useAppContext()
+  const { fetchUserData } = useAppContext();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [captchaToken, setCaptchaToken] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!captchaToken) {
+      alert("Please verify captcha first!");
+      return;
+    }
 
     try {
       const response = await fetch("/api/user/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, captchaToken }),
       });
 
       const json = await response.json();
@@ -70,6 +77,12 @@ export default function Login({ setLoginisOpen, setSignUpisOpen }) {
           type="password"
           placeholder="enter your account password"
           className="border-[1px] border-black/40 py-1 px-2 rounded-[7px] w-[100%]"
+        />
+
+        {/* کپچا */}
+        <ReCAPTCHA
+          sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
+          onChange={(token) => setCaptchaToken(token)}
         />
 
         <button

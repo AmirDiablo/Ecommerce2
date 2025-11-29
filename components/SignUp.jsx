@@ -6,6 +6,7 @@ import { useState } from "react";
 import axios from "axios";
 import GoogleButton from "./GoogleButton";
 import { useAppContext } from "@/context/AppContext";
+import ReCAPTCHA from "react-google-recaptcha";
 
 const SignUp = ({ setLoginisOpen, setSignUpisOpen }) => {
   const {fetchUserData} = useAppContext()
@@ -18,6 +19,7 @@ const SignUp = ({ setLoginisOpen, setSignUpisOpen }) => {
   const [code, setCode] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
+  const [captchaToken, setCaptchaToken] = useState("");
 
   const startCountdown = () => {
     setResendDisabled(true);
@@ -108,10 +110,15 @@ const SignUp = ({ setLoginisOpen, setSignUpisOpen }) => {
     setLoading(true);
     setError("");
 
+    if (!captchaToken) {
+      alert("Please verify captcha first!");
+      return;
+    }
+
     try {
       const response = await fetch("/api/user/signup", {
         method: "POST",
-        body: JSON.stringify({ username, email, password }),
+        body: JSON.stringify({ username, email, password, captchaToken }),
         headers: { "Content-Type": "application/json" },
       });
 
@@ -259,6 +266,12 @@ const SignUp = ({ setLoginisOpen, setSignUpisOpen }) => {
               className="border-[1px] border-black/40 py-1 px-2 rounded-[7px] w-[100%]"
             />
           </div>
+
+          {/* کپچا */}
+          <ReCAPTCHA
+            sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
+            onChange={(token) => setCaptchaToken(token)}
+          />
 
           <button
             onClick={createAccount}

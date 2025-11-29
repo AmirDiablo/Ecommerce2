@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import validator from "validator";
 import User from "../../../../models/UserModel";
+import axios from "axios";
 
 // ساخت توکن
 const createToken = (_id) => {
@@ -15,8 +16,35 @@ const trimer = (value) => {
 
 export async function POST(req) {
   try {
-    const { username, email, password } = await req.json();
+    const { username, email, password, captchaToken } = await req.json();
 
+    // بررسی وجود توکن کپچا
+    if (!captchaToken) {
+      return NextResponse.json(
+        { error: "Captcha token is missing" },
+        { status: 400 }
+      );
+    }
+
+    // اعتبارسنجی کپچا با گوگل
+    const secretKey = process.env.RECAPTCHA_SECRET_KEY;
+    const verifyUrl = "https://www.google.com/recaptcha/api/siteverify";
+
+    const { data } = await axios.post(verifyUrl, null, {
+      params: {
+        secret: secretKey,
+        response: captchaToken,
+      },
+    });
+
+    if (!data.success) {
+      return NextResponse.json(
+        { error: "Captcha verification failed" },
+        { status: 400 }
+      );
+    }
+
+    // ادامه ساخت حساب اگر کپچا معتبر بود
     const newUsername = validator.trim(username);
     const newEmail = trimer(email);
     const newPassword = trimer(password);
