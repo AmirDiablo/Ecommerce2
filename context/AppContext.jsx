@@ -165,7 +165,7 @@ export const AppContextProvider = (props) => {
         setUserData, setFavList,
         favList, setMenuIsOpen,
         menuIsOpen, setPageCount, 
-        pageCount
+        pageCount,
     }
 
     return (

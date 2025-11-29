@@ -1,12 +1,34 @@
 'use client'
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ProductCard from "./ProductCard";
 import { useAppContext } from "@/context/AppContext";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 const HomeProducts = () => {
 
-  const { products, router } = useAppContext()
+  const { router } = useAppContext()
+  const [products, setProducts] = useState([])
+  
+
+  const fetchPopulars = async () => {
+    try {
+      const {data} = await axios.get("/api/product/popular")
+      if(data.success) {
+        setProducts(data.products)
+      }else{
+        toast.error(data.message)
+      }
+
+    } catch (error) {
+      toast.error(error.message)
+    }
+  }
+
+  useEffect(()=> {
+    fetchPopulars()
+  }, [])
 
   return (
     <div className="flex flex-col items-center pt-14">
